@@ -1,148 +1,151 @@
-// Function to dynamically add table names to the sidebar
-function populateTableList() {
-  const tableList = document.getElementById("tableList");
-  const tables = [
-    "Cars",
-    "VehicleCategory",
-    "Reservations",
-    "Locations",
-    "Customers",
-    "Payments",
-  ]; // Add more tables as needed
+document.addEventListener("DOMContentLoaded", function () {
+  let currentTable = null;
 
-  tables.forEach((table) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = table;
-    listItem.onclick = () => showTable(table);
-    tableList.appendChild(listItem);
-  });
-}
+  function showAttributes(tableName) {
+    document.getElementById("attributesWindow").innerHTML = "";
 
-// Function to show attributes of the selected table
-function showTable(tableName) {
-  const attributesWindow = document.getElementById("attributesWindow");
-  const dataForm = document.getElementById("dataForm");
-  attributesWindow.innerHTML = `<p>Showing attributes for ${tableName}</p>`;
+    fetch(`/getAttributes?table=${tableName}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const attributes = data.attributes;
 
-  // Clear textfields in the form
-  dataForm.reset();
+        const attributesWindow = document.getElementById("attributesWindow");
+        attributes.forEach((attribute) => {
+          const inputField = document.createElement("input");
+          inputField.type = "text";
+          inputField.id = attribute;
+          inputField.placeholder = attribute;
+          attributesWindow.appendChild(inputField);
+        });
 
-  // Fetch and display the attributes of the selected table from the server
-  fetch(`/getAttributes?table=${tableName}`)
-    .then((response) => response.json())
-    .then((data) => {
-      // Iterate through the attributes and create textfields in the form
-      data.attributes.forEach((attribute) => {
-        const inputField = document.createElement("input");
-        inputField.type = "text";
-        inputField.id = attribute;
-        inputField.placeholder = attribute;
-        dataForm.appendChild(inputField);
+        currentTable = tableName;
+      })
+      .catch((error) => {
+        console.error("Error fetching attributes:", error);
       });
+  }
+
+  function updateButtonsVisibility() {
+    const displayButton = document.getElementById("displayButton");
+    const updateButton = document.getElementById("updateButton");
+    const deleteButton = document.getElementById("deleteButton");
+
+    if (currentTable) {
+      displayButton.style.display = "inline-block";
+      updateButton.style.display = "none";
+      deleteButton.style.display = "none";
+    } else {
+      displayButton.style.display = "none";
+      updateButton.style.display = "none";
+      deleteButton.style.display = "none";
+    }
+  }
+
+  function insertRecord() {
+    const data = {};
+    document.querySelectorAll("#attributesWindow input").forEach((input) => {
+      data[input.id] = input.value;
+    });
+
+    fetch(`/insertRecord?table=${currentTable}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     })
-    .catch((error) => console.error("Error fetching attributes:", error));
-}
-
-// Function to insert a record into the selected table
-function insertRecord() {
-  const dataForm = document.getElementById("dataForm");
-  const tableName = document
-    .querySelector("#attributesWindow p")
-    .textContent.split(" ")[3];
-
-  // Collect data from textfields
-  const formData = {};
-  dataForm.querySelectorAll("input").forEach((input) => {
-    formData[input.id] = input.value;
-  });
-
-  // Send a POST request to the server to insert the record
-  fetch(`/insertRecord?table=${tableName}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  })
-    .then((response) => response.json())
-    .then((data) => alert(data.message))
-    .catch((error) => console.error("Error inserting record:", error));
-}
-
-// Function to display records from the selected table
-function displayRecords() {
-  const tableName = document
-    .querySelector("#attributesWindow p")
-    .textContent.split(" ")[3];
-
-  // Fetch and display records from the server
-  fetch(`/getRecords?table=${tableName}`)
-    .then((response) => response.json())
-    .then((data) => {
-      // Display the fetched records
-      const recordsWindow = document.getElementById("attributesWindow");
-      recordsWindow.innerHTML = `<p>Records for ${tableName}</p>`;
-      data.records.forEach((record) => {
-        const recordString = Object.entries(record)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(", ");
-        recordsWindow.innerHTML += `<p>${recordString}</p>`;
+      .then((response) => response.json())
+      .then((result) => {
+        alert(result.message);
+      })
+      .catch((error) => {
+        console.error("Error inserting record:", error);
       });
+  }
+
+  function displayRecords() {
+    fetch(`/getRecords?table=${currentTable}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const records = data.records;
+        alert(JSON.stringify(records));
+      })
+      .catch((error) => {
+        console.error("Error fetching records:", error);
+      });
+  }
+
+  function updateRecord() {
+    // Create an object to store the record data
+    const data = {};
+
+    // Iterate through the form fields and populate the data object
+    document.querySelectorAll("#attributesWindow input").forEach((input) => {
+      data[input.id] = input.value;
+    });
+
+    // Make an AJAX request to update the record
+    fetch(`/updateRecord?table=${currentTable}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     })
-    .catch((error) => console.error("Error fetching records:", error));
-}
+      .then((response) => response.json())
+      .then((result) => {
+        alert(result.message); // Show success message
+      })
+      .catch((error) => {
+        console.error("Error updating record:", error);
+        alert("Error updating record. Please check the console for details.");
+      });
+  }
 
-// Function to update a specific record in the selected table
-function updateRecord() {
-  const dataForm = document.getElementById("dataForm");
-  const tableName = document
-    .querySelector("#attributesWindow p")
-    .textContent.split(" ")[3];
+  function deleteRecord() {
+    const data = {};
+    document.querySelectorAll("#attributesWindow input").forEach((input) => {
+      data[input.id] = input.value;
+    });
 
-  // Collect data from textfields
-  const formData = {};
-  dataForm.querySelectorAll("input").forEach((input) => {
-    formData[input.id] = input.value;
+    fetch(`/deleteRecord?table=${currentTable}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        alert(result.message);
+      })
+      .catch((error) => {
+        console.error("Error deleting record:", error);
+      });
+  }
+
+  document.querySelectorAll(".sidebar li").forEach((tableItem) => {
+    tableItem.addEventListener("click", () => {
+      showAttributes(tableItem.innerText.trim());
+      updateButtonsVisibility();
+    });
   });
 
-  // Send a POST request to the server to update the record
-  fetch(`/updateRecord?table=${tableName}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  })
-    .then((response) => response.json())
-    .then((data) => alert(data.message))
-    .catch((error) => console.error("Error updating record:", error));
-}
-
-// Function to delete a specific record from the selected table
-function deleteRecord() {
-  const dataForm = document.getElementById("dataForm");
-  const tableName = document
-    .querySelector("#attributesWindow p")
-    .textContent.split(" ")[3];
-
-  // Collect data from textfields
-  const formData = {};
-  dataForm.querySelectorAll("input").forEach((input) => {
-    formData[input.id] = input.value;
+  document.getElementById("displayButton").addEventListener("click", () => {
+    displayRecords();
+    document.getElementById("updateButton").style.display = "inline-block";
+    document.getElementById("deleteButton").style.display = "inline-block";
   });
 
-  // Send a POST request to the server to delete the record
-  fetch(`/deleteRecord?table=${tableName}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  })
-    .then((response) => response.json())
-    .then((data) => alert(data.message))
-    .catch((error) => console.error("Error deleting record:", error));
-}
+  document.getElementById("insertButton").addEventListener("click", () => {
+    insertRecord();
+  });
 
-// Call the function to populate the initial table list
-populateTableList();
+  document.getElementById("updateButton").addEventListener("click", () => {
+    updateRecord();
+  });
+
+  document.getElementById("deleteButton").addEventListener("click", () => {
+    deleteRecord();
+  });
+});

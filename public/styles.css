@@ -1,3 +1,16 @@
+/* Add this style to create a consistent spacing for labels and textfields */
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    margin-right: 10px;
+}
+
+/* Add any additional styling as needed */
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;

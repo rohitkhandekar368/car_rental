@@ -26,70 +26,10 @@
         <div id="attributesWindow"></div>
 
         <form id="dataForm">
-          <!-- Textfields for each attribute -->
-          <!-- Attributes for the Cars table -->
-          <input type="text" id="carID" placeholder="CarID" />
-          <input type="text" id="model" placeholder="Model" />
-          <input type="text" id="brand" placeholder="Brand" />
-          <input type="text" id="year" placeholder="Year" />
-          <input
-            type="text"
-            id="registrationPlate"
-            placeholder="RegistrationPlate"
-          />
-          <input type="text" id="fuelType" placeholder="FuelType" />
-          <input type="text" id="color" placeholder="Color" />
-          <input type="text" id="status" placeholder="Status" />
-          <input type="text" id="categoryID" placeholder="CategoryID" />
-          <input type="text" id="locationID" placeholder="LocationID" />
-
-          <!-- Attributes for the VehicleCategory table -->
-          <input type="text" id="categoryID" placeholder="CategoryID" />
-          <input type="text" id="categoryName" placeholder="CategoryName" />
-          <input type="text" id="description" placeholder="Description" />
-
-          <!-- Attributes for the Reservations table -->
-          <input type="text" id="reservationID" placeholder="ReservationID" />
-          <input type="text" id="customerID" placeholder="CustomerID" />
-          <input type="text" id="carID" placeholder="CarID" />
-          <input type="text" id="pickupDate" placeholder="PickupDate" />
-          <input type="text" id="returnDate" placeholder="ReturnDate" />
-          <input type="text" id="totalCost" placeholder="TotalCost" />
-          <input type="text" id="paymentID" placeholder="PaymentID" />
-          <input
-            type="text"
-            id="reservationStatus"
-            placeholder="ReservationStatus"
-          />
-
-          <!-- Attributes for the Locations table -->
-          <input type="text" id="locationID" placeholder="LocationID" />
-          <input type="text" id="locationName" placeholder="LocationName" />
-          <input type="text" id="address" placeholder="Address" />
-          <input type="text" id="contactPerson" placeholder="ContactPerson" />
-          <input type="text" id="contactNumber" placeholder="ContactNumber" />
-
-          <!-- Attributes for the Customers table -->
-          <input type="text" id="customerID" placeholder="CustomerID" />
-          <input type="text" id="firstName" placeholder="FirstName" />
-          <input type="text" id="lastName" placeholder="LastName" />
-          <input type="text" id="email" placeholder="Email" />
-          <input type="text" id="phone" placeholder="Phone" />
-          <input type="text" id="address" placeholder="Address" />
-
-          <!-- Attributes for the Payments table -->
-          <input type="text" id="paymentID" placeholder="PaymentID" />
-          <input type="text" id="reservationID" placeholder="ReservationID" />
-          <input type="text" id="paymentDate" placeholder="PaymentDate" />
-          <input type="text" id="amount" placeholder="Amount" />
-          <input type="text" id="paymentMethod" placeholder="PaymentMethod" />
-          <input type="text" id="paymentStatus" placeholder="PaymentStatus" />
-          <!-- Add more textfields as needed -->
-
-          <button type="button" onclick="insertRecord()">Insert</button>
-          <button type="button" onclick="displayRecords()">Display</button>
-          <button type="button" onclick="updateRecord()">Update</button>
-          <button type="button" onclick="deleteRecord()">Delete</button>
+          <button type="button" id="insertButton">Insert</button>
+          <button type="button" id="displayButton">Display</button>
+          <button type="button" id="updateButton">Update</button>
+          <button type="button" id="deleteButton">Delete</button>
         </form>
       </div>
     </div>

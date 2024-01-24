@@ -8,7 +8,7 @@ const port = 3000;
 // Configure MySQL connection
 const db = mysql.createConnection({
   host: "localhost",
-  port: 808,
+  port: 808, // Change to your MySQL port
   user: "root", // Replace with your MySQL username
   password: "", // Replace with your MySQL password
   database: "car_rental",
@@ -22,13 +22,8 @@ db.connect((err) => {
   }
 });
 
-// Middleware to parse JSON requests
 app.use(bodyParser.json());
-
-// Serve static files (HTML, CSS, JS)
 app.use(express.static("public"));
-
-// Define API endpoints
 
 // Get attributes of a table
 app.get("/getAttributes", (req, res) => {
@@ -79,41 +74,43 @@ app.get("/getRecords", (req, res) => {
   });
 });
 
-// Update a record in a table
+// Example of improved error handling in updateRecord and deleteRecord routes
 app.post("/updateRecord", (req, res) => {
   const tableName = req.query.table;
   const data = req.body;
 
   const query = `UPDATE ${tableName} SET ? WHERE ${tableName}ID = ?`;
 
-  db.query(query, [data, data[`${tableName}ID`]], (err) => {
+  db.query(query, [data, data[`${tableName}ID`]], (err, result) => {
     if (err) {
       console.error("Error updating record:", err);
       res.status(500).json({ error: "Internal Server Error" });
+    } else if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Record not found" });
     } else {
       res.json({ message: "Record updated successfully" });
     }
   });
 });
 
-// Delete a record from a table
 app.post("/deleteRecord", (req, res) => {
   const tableName = req.query.table;
   const data = req.body;
 
   const query = `DELETE FROM ${tableName} WHERE ${tableName}ID = ?`;
 
-  db.query(query, [data[`${tableName}ID`]], (err) => {
+  db.query(query, [data[`${tableName}ID`]], (err, result) => {
     if (err) {
       console.error("Error deleting record:", err);
       res.status(500).json({ error: "Internal Server Error" });
+    } else if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Record not found" });
     } else {
       res.json({ message: "Record deleted successfully" });
     }
   });
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
