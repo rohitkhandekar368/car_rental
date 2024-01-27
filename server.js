@@ -23,7 +23,7 @@ db.connect((err) => {
 });
 
 app.use(bodyParser.json());
-app.use(express.static("public"));
+app.use(express.static("docs"));
 
 // Get attributes of a table
 app.get("/getAttributes", (req, res) => {
